@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import API_URL from "@/utils/api";
 import { motion } from "framer-motion";
+import type { HTMLMotionProps } from "framer-motion";
 import {
   MapPin,
   Search,
@@ -15,6 +16,14 @@ import {
   Mail,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+
+const MotionButton = motion.button as unknown as React.ComponentType<
+  React.ButtonHTMLAttributes<HTMLButtonElement> & HTMLMotionProps<"button">
+>;
+
+
+
+
 
 export default function BookingPage() {
   const router = useRouter();
@@ -434,16 +443,18 @@ export default function BookingPage() {
                   <div className="font-semibold text-gray-800">₹{currentPrice}</div>
                 </div>
 
-                <motion.button
+                <MotionButton
+                  type="button"
                   whileTap={{ scale: 0.98 }}
                   onClick={submitBooking}
                   disabled={loading}
                   className={`px-6 py-3 rounded-lg text-white font-semibold ${
-                    loading ? "bg-blue-300" : "bg-blue-600 hover:bg-blue-700"
+                  loading ? "bg-blue-300" : "bg-blue-600 hover:bg-blue-700"
                   }`}
-                >
-                  {loading ? "Booking..." : "Book Now"}
-                </motion.button>
+              >
+                    {loading ? "Booking..." : "Book Now"}
+                </MotionButton>
+
               </div>
 
             </div>
