@@ -2,8 +2,9 @@
 
 import React, { useEffect, useState } from "react";
 import API_URL from "@/utils/api";
-import { motion } from "framer-motion";
-import type { HTMLMotionProps } from "framer-motion";
+import { motion, MotionProps } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { forwardRef } from "react";
 import {
   MapPin,
   Search,
@@ -15,14 +16,18 @@ import {
   CheckCircle,
   Mail,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
-
-const MotionButton = motion.button as unknown as React.ComponentType<
-  React.ButtonHTMLAttributes<HTMLButtonElement> & HTMLMotionProps<"button">
->;
 
 
+type MotionButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & MotionProps;
 
+const MotionButton = motion(
+  forwardRef<HTMLButtonElement, MotionButtonProps>(function MotionButton(
+    props,
+    ref
+  ) {
+    return <button ref={ref} {...props} />;
+  })
+);
 
 
 export default function BookingPage() {
