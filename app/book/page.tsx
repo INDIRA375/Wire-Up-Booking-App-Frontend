@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import API_URL from "@/utils/api";
 import { motion } from "framer-motion";
 import {
   MapPin,
@@ -158,7 +159,7 @@ export default function BookingPage() {
 
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/bookings/create", {
+      const res = await fetch(`${API_URL}/api/bookings/create`, {
 
         method: "POST",
         headers: { "Content-Type": "application/json" },
