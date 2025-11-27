@@ -1,59 +1,79 @@
 "use client";
-
-
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { X } from "lucide-react";
 import ColorChanger from "../components/ColorChanger";
+import API_URL from "@/utils/api";
+
+// Define the type for the form errors
+interface FormErrors {
+  name?: string;
+  email?: string;
+  phone?: string;
+}
 
 export default function LoginPage() {
+  // Background color state
   const [bgColor, setBgColor] = useState("#ffffff");
+
+  // Form fields
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
 
-  const [errors, setErrors] = useState({});
+  // Form errors
+  const [errors, setErrors] = useState<FormErrors>({});
 
-  const validateForm = () => {
-    const newErrors = {};
+  // Validate form fields
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {};
 
     if (!name.trim()) newErrors.name = "Name is required";
     if (!email.trim()) newErrors.email = "Email is required";
     if (!phone.trim()) newErrors.phone = "Phone number is required";
 
     setErrors(newErrors);
+
     return Object.keys(newErrors).length === 0;
   };
 
-  const inputClass = (err) =>
+  // Input field CSS with error handling
+  const inputClass = (err?: string) =>
     `w-full px-4 py-3 bg-gray-50 border rounded-xl transition-all duration-300 
      outline-none text-black
      focus:ring-2 focus:ring-blue-600 focus:bg-white
      ${err ? "border-red-500" : "border-gray-300"}`;
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
 
+  if (!validateForm()) return;
+
   try {
-    const res = await fetch("http://localhost:5000/api/send-otp", {
+    const res = await fetch(`${API_URL}/api/users`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone }),
+      body: JSON.stringify({ name, email, phone }),
     });
 
     const data = await res.json();
 
-    if (data.success) {
-      alert("OTP sent successfully!");
-      router.push(`/otp?phone=${phone}`);
+    if (res.ok) {
+      alert(data.message); // "User saved successfully"
+      // Reset form
+      setName("");
+      setEmail("");
+      setPhone("");
+      setErrors({});
     } else {
-      alert("Failed to send OTP");
+      alert(data.message || "Failed to save user");
     }
   } catch (err) {
-    alert("Server error!");
-    console.log(err);
+    console.error(err);
+    alert("Error saving user");
   }
 };
+
 
   return (
     <div
@@ -85,7 +105,7 @@ export default function LoginPage() {
         </p>
 
         {/* FORM */}
-        <div className="space-y-6">
+        <form className="space-y-6" onSubmit={handleSubmit}>
           <div>
             <label className="text-sm text-gray-700">Full Name</label>
             <input
@@ -126,14 +146,14 @@ export default function LoginPage() {
           </div>
 
           <motion.button
+            type="submit"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.96 }}
-            onClick={handleSubmit}
             className="w-full py-3 bg-blue-600 text-white rounded-xl font-semibold shadow-md hover:bg-blue-700 transition"
           >
             Submit
           </motion.button>
-        </div>
+        </form>
       </motion.div>
     </div>
   );
